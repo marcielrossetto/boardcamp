@@ -2,13 +2,12 @@
   "name": "boardcamp",
   "version": "1.0.0",
   "main": "index.js",
+  "type": "module",
   "license": "MIT",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "keywords": [],
-  "author": "",
-  "description": "",
+"scripts": {
+"dev": "nodemon src/app.js"
+}
+,
   "dependencies": {
     "cors": "^2.8.5",
     "dayjs": "^1.11.13",
