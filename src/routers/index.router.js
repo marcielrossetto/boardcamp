@@ -1,10 +1,12 @@
-import express from 'express';
+import { Router } from 'express';
+import gameRouter from './game.router.js';
+import customerRouter from './customer.router.js';
+import rentalRouter from './rental.router.js';
 
-const router = express.Router();
+const router = Router();
 
-// Exemplo de rota
-router.get("/health", (req, res) => {
-  res.send("OK");
-});
+router.use(gameRouter);
+router.use(customerRouter);
+router.use(rentalRouter);
 
 export default router;
