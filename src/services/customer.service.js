@@ -1,23 +1,24 @@
 import { customerRepository } from "../repositories/customer.repository.js";
 
-async function listCustomer() {
-    const customers = await customerRepository.getCostumers();
+async function listCustomers() {
+    const customers = await customerRepository.getCustomers();
     return customers.rows;
 }
 
-async function findCostumerById(id) {
-    const customer = await customerRepository.getCustomersById(id);
-    if (customerRepository.rowCount === 0){
-        throw { type: "Not_found", message: "Customer Not Found." };
+async function findCustomerById(id) {
+    const customer = await customerRepository.getCustomerById(id);
+    if (customer.rowCount === 0) {
+        throw { type: "not_found", message: "Customer not found." };
     }
     return customer.rows[0];
 }
 
-async function createCustomer(name, phone, cpf){
-    const existingCustomer = await customerRepository.findGameByCpf(cpf);
-    if (existingCustomer.rowCownt > 0) {
-        throw { type: "comflict", message: " This CPF is already registred." };
+async function createCustomer(name, phone, cpf) {
+    const existingCustomer = await customerRepository.findCustomerByCpf(cpf);
+    if (existingCustomer.rowCount > 0) {
+        throw { type: "conflict", message: "This CPF is already registered." };
     }
     return customerRepository.insertCustomer(name, phone, cpf);
 }
-export const customerService = { listCustomer, findCostumerById, createCustomer};
+
+export const customerService = { listCustomers, findCustomerById, createCustomer };

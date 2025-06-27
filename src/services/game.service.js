@@ -1,12 +1,11 @@
-import e from "express";
 import { gameRepository } from "../repositories/game.repository.js";
 
-async function creatGame(name,image, stockTotal, pricePerDay) {
-    const existGame = await gameRepository.findGmaByName(name);
-    if (existGame.rowCount > 0){
-        throw { type: "conflict", message: "This game name already exists."};
+async function createGame(name, image, stockTotal, pricePerDay) {
+    const existGame = await gameRepository.findGameByName(name);
+    if (existGame.rowCount > 0) {
+        throw { type: "conflict", message: "This game name already exists." };
     }
-    return gameRepository.insertGame(name, image, stockTotal,pricePerDay);
+    return gameRepository.insertGame(name, image, stockTotal, pricePerDay);
 }
 
 async function listGame() {
@@ -14,4 +13,4 @@ async function listGame() {
     return games.rows;
 }
 
-export const gameService = { creatGame, listGame };
+export const gameService = { createGame, listGame };
