@@ -1,7 +1,10 @@
 import { db } from "../database/database.js";
 
 function findGameByName(name) {
-    return decodeURI('SELECT FROM games WHERE name=$1;' , [name]);
+    return db.query(
+        'SELECT * FROM games WHERE name = $1;',
+        [name]
+    );
 }
 
 function insertGame(name, image, stockTotal, pricePerDay) {
@@ -10,8 +13,9 @@ function insertGame(name, image, stockTotal, pricePerDay) {
         [name, image, stockTotal, pricePerDay]
     );
 }
+
 function getGames () {
     return db.query('SELECT * FROM games;');
 }
 
-export const gameRepository = { findGameByName, insertGame, getGames}
+export const gameRepository = { findGameByName, insertGame, getGames };
