@@ -1,6 +1,7 @@
 import dayjs from "dayjs";
 import { rentalRepository } from "../repositories/rental.repository.js";
-import { gameRepository } from "../repositories/game.repository.js"; // Para buscar o preço do jogo
+import { gameRepository } from "../repositories/game.repository.js";
+import { customerRepository } from "../repositories/customer.repository.js";
 
 async function listRentals() {
     const result = await rentalRepository.getRentals();
@@ -14,38 +15,51 @@ async function listRentals() {
         originalPrice: r.originalPrice,
         delayFee: r.delayFee,
         customer: {
-            id: r.cId,
-            name: r.cName,
+            id: r.customerId,
+            name: r.customerName
         },
         game: {
-            id: r.gId,
-            name: r.gName
+            id: r.gameId,
+            name: r.gameName
         }
     }));
 }
 
 async function createRental(customerId, gameId, daysRented) {
-    const customerExists = await customerRepository.getCustomerById(customerId);
-    if (customerExists.rowCount === 0) {
-        throw { type: "bad_request", message: "Customer not found" }; // O req pede 404, mas semanticamente 400 faz mais sentido para uma foreign key
+    // Verificar se o cliente existe
+    const customer = await customerRepository.getCustomerById(customerId);
+    if (customer.rowCount === 0) {
+        throw { type: "not_found", message: "Customer not found" };
     }
 
-    const game = await gameRepository.findGameById(gameId); // Reutilizei o do repositório de jogos
+    // Verificar se o jogo existe
+    const game = await gameRepository.getGameById(gameId);
     if (game.rowCount === 0) {
-        throw { type: "bad_request", message: "Game not found" };
+        throw { type: "not_found", message: "Game not found" };
     }
 
     const gameDetails = game.rows[0];
+
+    // Verificar disponibilidade do jogo
     const openRentals = await rentalRepository.getOpenRentalsByGameId(gameId);
-    
     if (openRentals.rowCount >= gameDetails.stockTotal) {
         throw { type: "unprocessable_entity", message: "Game is out of stock" };
+    }
+
+    if (daysRented <= 0) {
+        throw { type: "bad_request", message: "daysRented must be greater than zero" };
     }
 
     const rentDate = dayjs().format('YYYY-MM-DD');
     const originalPrice = daysRented * gameDetails.pricePerDay;
 
-    return rentalRepository.insertRental(customerId, gameId, daysRented, rentDate, originalPrice);
+    await rentalRepository.insertRental(
+        customerId,
+        gameId,
+        daysRented,
+        rentDate,
+        originalPrice
+    );
 }
 
 async function finishExistingRental(id) {
@@ -61,25 +75,39 @@ async function finishExistingRental(id) {
 
     const returnDate = dayjs();
     const rentDate = dayjs(rental.rentDate);
-    const daysLate = returnDate.diff(rentDate.add(rental.daysRented, 'day'), 'day');
+    const dueDate = rentDate.add(rental.daysRented, "day");
 
-    const delayFee = daysLate > 0 ? daysLate * (rental.originalPrice / rental.daysRented) : 0;
+    const daysLate = returnDate.diff(dueDate, "day");
+    const delayFee = daysLate > 0
+        ? daysLate * (rental.originalPrice / rental.daysRented)
+        : 0;
 
-    return rentalRepository.finishRental(id, returnDate.format('YYYY-MM-DD'), delayFee);
+    await rentalRepository.finishRental(
+        id,
+        returnDate.format("YYYY-MM-DD"),
+        delayFee
+    );
 }
 
-async function deleteExistingRental(id) {
+export async function deleteExistingRental(id) {
     const rentalResult = await rentalRepository.getRentalById(id);
+
     if (rentalResult.rowCount === 0) {
         throw { type: "not_found", message: "Rental not found" };
     }
 
     const rental = rentalResult.rows[0];
+
     if (rental.returnDate === null) {
         throw { type: "bad_request", message: "Cannot delete an open rental" };
     }
 
-    return rentalRepository.deleteRentalById(id);
+    await rentalRepository.deleteRentalById(id);
 }
 
-export const rentalService = { listRentals, createRental, finishExistingRental, deleteExistingRental };
+export const rentalService = {
+    listRentals,
+    createRental,
+    finishExistingRental,
+    deleteExistingRental
+};

@@ -1,11 +1,16 @@
 import { Router } from "express";
-import { rentalSchema } from "../schema/rental.schema.js";
-import validateSchema from "../middlewares/validateSchema.middleware.js";
-import { getRentals, postRental } from "../controllers/rental.controller.js";
+import { 
+    getRentals, 
+    postRental, 
+    returnRental, 
+    deleteRental 
+} from "../controllers/rental.controller.js";
 
 const rentalRouter = Router();
 
-rentalRouter.post("/rentals", validateSchema(rentalSchema), postRental);
 rentalRouter.get("/rentals", getRentals);
+rentalRouter.post("/rentals", postRental);
+rentalRouter.post("/rentals/:id/return", returnRental);
+rentalRouter.delete("/rentals/:id", deleteRental);
 
 export default rentalRouter;

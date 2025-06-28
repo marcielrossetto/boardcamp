@@ -11,11 +11,17 @@ export async function postRental(req, res) {
     res.sendStatus(201);
 }
 
-export async function finishRental(req, res) {
+export async function returnRental(req, res, next) {
     const { id } = req.params;
-    await rentalService.finishExistingRental(id);
-    res.sendStatus(200);
+
+    try {
+        await rentalService.finishExistingRental(Number(id));
+        res.sendStatus(200);
+    } catch (error) {
+        next(error);
+    }
 }
+
 
 export async function deleteRental(req, res) {
     const { id } = req.params;

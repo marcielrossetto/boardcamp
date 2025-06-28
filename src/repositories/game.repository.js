@@ -13,9 +13,15 @@ function insertGame(name, image, stockTotal, pricePerDay) {
         [name, image, stockTotal, pricePerDay]
     );
 }
+function getGameById(id) {
+    return db.query(
+        'SELECT * FROM games WHERE id = $1;',
+        [id]
+    );
+}
 
 function getGames () {
     return db.query('SELECT * FROM games;');
 }
 
-export const gameRepository = { findGameByName, insertGame, getGames };
+export const gameRepository = { findGameByName, insertGame, getGames,getGameById };
