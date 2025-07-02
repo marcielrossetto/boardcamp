@@ -14,3 +14,4 @@ rentalRouter.post("/rentals/:id/return", returnRental);
 rentalRouter.delete("/rentals/:id", deleteRental);
 
 export default rentalRouter;
+0
