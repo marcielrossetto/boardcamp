@@ -104,10 +104,38 @@ export async function deleteExistingRental(id) {
 
     await rentalRepository.deleteRentalById(id);
 }
+async function getRentalById(id) {
+    const rentalResult = await rentalRepository.getRentalById(id);
+    if (rentalResult.rowCount === 0) {
+        return null;
+    }
+
+    const r = rentalResult.rows[0];
+
+    return {
+        id: r.id,
+        customerId: r.customerId,
+        gameId: r.gameId,
+        rentDate: dayjs(r.rentDate).format('YYYY-MM-DD'),
+        daysRented: r.daysRented,
+        returnDate: r.returnDate ? dayjs(r.returnDate).format('YYYY-MM-DD') : null,
+        originalPrice: r.originalPrice,
+        delayFee: r.delayFee,
+        customer: {
+            id: r.customerId,
+            name: r.customerName
+        },
+        game: {
+            id: r.gameId,
+            name: r.gameName
+        }
+    };
+}
 
 export const rentalService = {
     listRentals,
     createRental,
     finishExistingRental,
-    deleteExistingRental
+    deleteExistingRental,
+    getRentalById
 };

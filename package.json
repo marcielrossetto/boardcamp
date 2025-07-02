@@ -18,5 +18,8 @@
   },
   "description": "boardcamp/\r ├── .env\r ├── .gitignore\r ├── package-lock.json\r ├── package.json\r └── src/\r     ├── app.js\r     ├── controllers/\r     │   ├── customer.controller.js\r     │   ├── game.controller.js\r     │   └── rental.controller.js\r     ├── database/\r     │   └── database.js\r     ├── middlewares/\r     │   ├── error.middleware.js\r     │   └── validateSchema.middleware.js\r     ├── repositories/\r     │   ├── customer.repository.js\r     │   ├── game.repository.js\r     │   └── rental.repository.js\r     ├── routers/\r     │   ├── customer.router.js\r     │   ├── game.router.js\r     │   ├── index.router.js\r     │   └── rental.router.js\r     ├── schemas/\r     │   ├── customer.schema.js\r     │   ├── game.schema.js\r     │   └── rental.schema.js\r     └── services/\r         ├── customer.service.js\r         ├── game.service.js\r         └── rental.service.js",
   "keywords": [],
-  "author": ""
+  "author": "",
+  "devDependencies": {
+    "nodemon": "^3.1.10"
+  }
 }

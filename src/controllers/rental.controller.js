@@ -28,3 +28,19 @@ export async function deleteRental(req, res) {
     await rentalService.deleteExistingRental(id);
     res.sendStatus(200);
 }
+
+export async function getRentalById(req, res, next) {
+    const { id } = req.params;
+
+    try {
+        const rental = await rentalService.getRentalById(Number(id));
+
+        if (!rental) {
+            return res.status(404).send("Rental not found");
+        }
+
+        res.send(rental);
+    } catch (error) {
+        next(error);
+    }
+}
